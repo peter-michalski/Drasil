@@ -1,18 +1,14 @@
 module Drasil.GlassBR.TMods (tMods, pbIsSafe, lrIsSafe) where
 
 import Language.Drasil
-import Language.Drasil.Code (relToQD) -- FIXME, this should not be needed
-import Database.Drasil (cdb)
 import Theory.Drasil (TheoryModel, tm)
 import Utils.Drasil
 
 import Control.Lens ((^.))
 
 import Drasil.GlassBR.Concepts (lResistance)
-import Drasil.GlassBR.IMods (symb)
 import Drasil.GlassBR.References (astm2009)
 import Drasil.GlassBR.Unitals (tmDemand, demandq, isSafeProb, isSafeLoad, tmLRe, pbTolfail, probFail)
-import Drasil.GlassBR.Symbols (thisSymbols)
 
 {--}
 
@@ -21,23 +17,21 @@ tMods = [pbIsSafe, lrIsSafe]
 
 -- FIXME: This is a hack to see if TheoryModel printing will work. This chunk
 -- needs to be updated properly.
--- this is the new function but it still uses the lrIsSafeRC,
+-- this is the new function but it still uses the lrIsSafeQD,
 -- so basically we have to combine the old function with the new function
 -- glass_concept :: [ConceptInstance]
 -- glass_concept = []
 
 
 lrIsSafe :: TheoryModel
-lrIsSafe = tm (cw lrIsSafeRC)
+lrIsSafe = tm (cw lrIsSafeQD)
    [qw isSafeLoad, qw tmLRe, qw tmDemand] ([] :: [ConceptChunk])
-   [relToQD locSymbMap lrIsSafeRC] [sy isSafeLoad $= sy tmLRe $> sy tmDemand] [] [makeCite astm2009] 
+   [lrIsSafeQD] [sy isSafeLoad $= sy tmLRe $> sy tmDemand] [] [makeCite astm2009] 
    "isSafeLoad" [lrIsSafeDesc]
-   where locSymbMap = cdb thisSymbols ([] :: [IdeaDict]) symb
-                          ([] :: [UnitDefn]) [] [] [] [] [] [] []
 
-lrIsSafeRC :: RelationConcept
-lrIsSafeRC = makeRC "safetyLoad" (nounPhraseSP "Safety Load")
-  lrIsSafeDesc (sy isSafeLoad $= sy tmLRe $> sy tmDemand)
+lrIsSafeQD :: QDefinition
+lrIsSafeQD = fromEqn' "safetyLoad" (nounPhraseSP "Safety Load")
+  EmptyS (eqSymb isSafeLoad) Boolean (sy tmLRe $> sy tmDemand)
 
 lrIsSafeDesc :: Sentence
 lrIsSafeDesc = tModDesc isSafeLoad s ending
@@ -48,16 +42,14 @@ lrIsSafeDesc = tModDesc isSafeLoad s ending
       titleize demandq) `isThe` (demandq ^. defn)
 
 pbIsSafe :: TheoryModel
-pbIsSafe = tm (cw pbIsSafeRC) 
+pbIsSafe = tm (cw pbIsSafeQD) 
   [qw isSafeProb, qw probFail, qw pbTolfail] ([] :: [ConceptChunk])
-  [relToQD locSymbMap pbIsSafeRC] [sy isSafeProb $= sy probFail $< sy pbTolfail] [] [makeCite astm2009]
+  [pbIsSafeQD] [sy isSafeProb $= sy probFail $< sy pbTolfail] [] [makeCite astm2009]
   "isSafeProb" [pbIsSafeDesc]
-  where locSymbMap = cdb thisSymbols ([] :: [IdeaDict]) symb
-                          ([] :: [UnitDefn]) [] [] [] [] [] [] []
 
-pbIsSafeRC :: RelationConcept
-pbIsSafeRC = makeRC "safetyProbability" (nounPhraseSP "Safety Probability")
-  pbIsSafeDesc (sy isSafeProb $= sy probFail $< sy pbTolfail)
+pbIsSafeQD :: QDefinition
+pbIsSafeQD = fromEqn' "safetyProbability" (nounPhraseSP "Safety Probability")
+  EmptyS (eqSymb isSafeProb) Boolean (sy probFail $< sy pbTolfail)
 
 pbIsSafeDesc :: Sentence
 pbIsSafeDesc = tModDesc isSafeProb s ending

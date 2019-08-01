@@ -1,15 +1,15 @@
 {- re-export many things to simplify external use -}
 module Theory.Drasil (
   -- DataDefinition
-  DataDefinition, mkQuantDef, dd, ddNoRefs, qdFromDD
+  DataDefinition, mkQuantDef, dd, ddNoRefs, qdFromDD,
   -- GenDefn
-  , GenDefn, gd, gdNoRefs
+  GenDefn, gd, gdNoRefs,
   -- InstanceModel
-  , InstanceModel, Constraints
-  , im, imNoDeriv, imNoRefs, imNoDerivNoRefs
-  , inCons, outCons, imOutput, imInputs
+  InstanceModel, Constraints,
+  getEqMod, im, imNoDeriv, imNoRefs, imNoDerivNoRefs,
+  inCons, outCons, imOutput, imInputs,
   -- Theory
-  , Theory(..), TheoryModel, tm, tmNoRefs
+  Theory(..), TheoryModel, tm, tmNoRefs
 ) where
 
 import Theory.Drasil.DataDefinition (DataDefinition, mkQuantDef,
