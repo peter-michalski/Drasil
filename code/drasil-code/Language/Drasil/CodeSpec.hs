@@ -165,7 +165,7 @@ type Name = String
 
 -- medium hacks ---
 relToQD :: ExprRelat c => ChunkDB -> c -> QDefinition
-relToQD sm r = convertRel sm (r ^. relat)
+relToQD sm r = convertRel sm (relat r)
 
 convertRel :: ChunkDB -> Expr -> QDefinition
 convertRel sm (BinaryOp Eq (C x) r) = ec (symbLookup x $ symbolTable sm) r
