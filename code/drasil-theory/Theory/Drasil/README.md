@@ -1,6 +1,6 @@
 --------------------------------------------------
 ### Summary of Folder Structure and File Contents
-Last updated: May 15, 2019
+Last updated: August 1, 2019
 --------------------------------------------------
 
 DataDefinition.hs
@@ -11,6 +11,9 @@ GenDefn.hs
 
 InstanceModel.hs
   - Instance model chunks
+
+ModelKinds.hs
+  - Defines the ModelKinds type
 
 README.md
   - This file
