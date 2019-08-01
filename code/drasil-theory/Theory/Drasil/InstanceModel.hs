@@ -1,5 +1,6 @@
 {-# LANGUAGE Rank2Types, ScopedTypeVariables, TemplateHaskell #-}
-module Theory.Drasil.InstanceModel (Constraints, InstanceModel, getEqMod,
+module Theory.Drasil.InstanceModel (Constraints, InstanceModel,
+  eqModel, getEqMod,
   im, imNoDeriv, imNoRefs, imNoDerivNoRefs,
   inCons, outCons, imOutput, imInputs -- FIXME, these should be done via lenses
   ) where
@@ -87,6 +88,12 @@ imNoDerivNoRefs :: RelationConcept -> Inputs -> InputConstraints -> Output ->
   OutputConstraints -> String -> [Sentence] -> InstanceModel
 imNoDerivNoRefs rcon i ic o oc sn = 
   IM (OthModel rcon) i ic o oc [] Nothing (shortname' sn) (prependAbrv inModel sn)
+
+-- | Smart constructor for equational models
+eqModel :: QDefinition -> Inputs -> InputConstraints -> Output -> 
+  OutputConstraints -> [Reference] -> Maybe Derivation -> String -> [Sentence] -> InstanceModel
+eqModel q i ic o oc src der sn =
+  IM (EquationalModel q) i ic o oc src der (shortname' sn) (prependAbrv inModel sn)
 
 -- | Get equational models from a list of instance models
 getEqMod :: [InstanceModel] -> [QDefinition]

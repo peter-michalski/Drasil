@@ -5,7 +5,7 @@ module Theory.Drasil (
   -- GenDefn
   GenDefn, gd, gdNoRefs,
   -- InstanceModel
-  InstanceModel, Constraints,
+  InstanceModel, Constraints, eqModel,
   getEqMod, im, imNoDeriv, imNoRefs, imNoDerivNoRefs,
   inCons, outCons, imOutput, imInputs,
   -- Theory
