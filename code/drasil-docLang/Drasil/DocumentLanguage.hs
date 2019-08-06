@@ -276,7 +276,7 @@ mkSolChSpec si (SCSProg l) =
     mkSubSCS _ (TMs _ _ [])   = error "There are no Theoretical Models"
     mkSubSCS _ (GDs _ _ [] _) = SSD.genDefnF []
     mkSubSCS _ (DDs _ _ [] _) = error "There are no Data Definitions"
-    mkSubSCS _ (IMs _ _ [] _)  = error "There are no Instance Models"
+    mkSubSCS _ (IMs _ _ [] _) = error "There are no Instance Models"
     mkSubSCS si' (TMs intro fields ts) =
       SSD.thModF (siSys si') $ map mkParagraph intro ++ map (LlC . tmodel fields si') ts
     mkSubSCS si' (DDs intro fields dds ShowDerivation) = --FIXME: need to keep track of DD intro.
@@ -288,10 +288,10 @@ mkSolChSpec si (SCSProg l) =
     mkSubSCS si' (GDs intro fields gs' _) =
       SSD.genDefnF $ map mkParagraph intro ++ map (LlC . gdefn fields si') gs'
     mkSubSCS si' (IMs intro fields ims ShowDerivation) =
-      SSD.inModelF pdStub ddStub tmStub (SRS.genDefn [] []) $ map mkParagraph intro ++
+      SSD.inModelF pdStub ddStub tmStub gdStub $ map mkParagraph intro ++
       concatMap (\x -> [LlC $ instanceModel fields si' x, derivation x]) ims
     mkSubSCS si' (IMs intro fields ims _) =
-      SSD.inModelF pdStub ddStub tmStub (SRS.genDefn [] []) $ map mkParagraph intro ++
+      SSD.inModelF pdStub ddStub tmStub gdStub $ map mkParagraph intro ++
       map (LlC . instanceModel fields si') ims
     mkSubSCS si' (Assumptions ci) =
       SSD.assumpF $ mkEnumSimpleD $ map (`helperCI` si') ci
@@ -307,11 +307,12 @@ helperCI a c = over defn (\x -> foldlSent_ [x, refby $ helperRefs a c]) a
 {--}
 
 -- | Section stubs for implicit referencing
-tmStub, ddStub, imStub, pdStub :: Section
-tmStub = SRS.thModel   [] []
-ddStub = SRS.dataDefn  [] []
-imStub = SRS.inModel   [] []
-pdStub = SRS.probDesc  [] []
+tmStub, gdStub, ddStub, imStub, pdStub :: Section
+tmStub = SRS.thModel  [] []
+gdStub = SRS.genDefn  [] []
+ddStub = SRS.dataDefn [] []
+imStub = SRS.inModel  [] []
+pdStub = SRS.probDesc [] []
 
 -- | Helper for making the 'Requirements' section
 mkReqrmntSec :: ReqrmntSec -> Section
