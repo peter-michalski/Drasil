@@ -2,9 +2,11 @@ module Drasil.GamePhysics.Body where
 
 import Language.Drasil hiding (Symbol(..), Vector, organization, section)
 import Language.Drasil.Printers (PrintingInformation(..), defaultConfiguration)
-import Database.Drasil (ChunkDB, ReferenceDB, SystemInformation(SI), cdb, rdb,
-  refdb, _authors, _concepts, _constants, _constraints, _datadefs, _definitions,
-  _defSequence, _inputs, _kind, _outputs, _quants, _sys, _sysinfodb, _usedinfodb)
+import Database.Drasil (Block(Parallel), ChunkDB, ReferenceDB, SystemInformation(SI),
+  cdb, rdb, refdb, _authors, _concepts, _constants, _constraints, _datadefs,
+  _definitions, _defSequence, _inputs, _kind, _outputs, _quants, _sys, _sysinfodb,
+  _usedinfodb, sampleData)
+import Theory.Drasil (qdFromDD)
 import Utils.Drasil
 import Drasil.DocLang (DerivationDisplay(..), DocSection(..), Emphasis(..),
   Field(..), Fields, InclUnits(IncludeUnits), IntroSec(..), IntroSub(..),
@@ -34,14 +36,13 @@ import Data.Drasil.Software.Products (openSource, prodtcon, sciCompS, videoGame)
 import qualified Data.Drasil.Concepts.PhysicalProperties as CPP (ctrOfMass, dimension)
 import qualified Data.Drasil.Concepts.Physics as CP (elasticity, physicCon, rigidBody, collision)
 import qualified Data.Drasil.Concepts.Math as CM (cartesian, equation, law,
-  mathcon, mathcon', rightHand)
+  mathcon, mathcon', rightHand, line, point)
 import qualified Data.Drasil.Quantities.Physics as QP (force, time)
 
 import Drasil.GamePhysics.Assumptions (assumptions)
 import Drasil.GamePhysics.Changes (likelyChgs, unlikelyChgs)
 import Drasil.GamePhysics.Concepts (gamePhysics, acronyms, threeD, twoD)
-import Drasil.GamePhysics.DataDefs (qDefs, blockQDefs)
-import qualified Drasil.GamePhysics.DataDefs as GP (dataDefs)
+import Drasil.GamePhysics.DataDefs (dataDefs)
 import Drasil.GamePhysics.Goals (goals)
 import Drasil.GamePhysics.IMods (iMods, instModIntro)
 import Drasil.GamePhysics.References (citations, parnas1972, parnasClements1984)
@@ -111,16 +112,18 @@ si = SI {
   _quants =  [] :: [QuantityDict], -- map qw iMods ++ map qw symbolsAll,
   _concepts = [] :: [DefinedQuantityDict],
   _definitions = qDefs,
-  _datadefs = GP.dataDefs,
+  _datadefs = dataDefs,
   _inputs = inputSymbols,
   _outputs = outputSymbols, 
-  _defSequence = blockQDefs,
+  _defSequence = map (\x -> Parallel x []) qDefs,
   _constraints = inputConstraints,
   _constants = [],
   _sysinfodb = symbMap,
   _usedinfodb = usedDB,
-   refdb = refDB
+   refdb = refDB,
+   sampleData = "../../datafiles/GamePhysics/sampleInput.txt"
 }
+  where qDefs = map qdFromDD dataDefs
 
 concIns :: [ConceptInstance]
 concIns = assumptions ++ goals ++ likelyChgs ++ unlikelyChgs ++ funcReqs ++ nonfuncReqs
@@ -147,7 +150,7 @@ symbMap = cdb (map qw iMods ++ map qw symbolsAll) (map nw symbolsAll
   ++ map nw softwarecon ++ map nw doccon ++ map nw doccon'
   ++ map nw CP.physicCon ++ map nw educon ++ [nw algorithm] ++ map nw derived
   ++ map nw fundamentals ++ map nw CM.mathcon ++ map nw CM.mathcon')
-  (map cw defSymbols ++ srsDomains ++ map cw iMods) units GP.dataDefs
+  (map cw defSymbols ++ srsDomains ++ map cw iMods) units dataDefs
   iMods generalDefns tMods concIns section []
 
 usedDB :: ChunkDB
@@ -332,7 +335,7 @@ probDescIntro = foldlSent_
 -----------------------------------------
 
 terms :: [ConceptChunk]
-terms = [CP.rigidBody, CP.elasticity, CPP.ctrOfMass, CM.cartesian, CM.rightHand]
+terms = [CP.rigidBody, CP.elasticity, CPP.ctrOfMass, CM.cartesian, CM.rightHand, CM.line, CM.point]
 
 -----------------------------
 -- 4.1.2 : Goal Statements --
