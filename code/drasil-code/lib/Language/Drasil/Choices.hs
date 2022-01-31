@@ -5,7 +5,7 @@ module Language.Drasil.Choices (
   CodeConcept(..), matchConcepts, SpaceMatch, matchSpaces, ImplementationType(..),
   ConstraintBehaviour(..), Comments(..), Verbosity(..), Visibility(..), 
   Logging(..), AuxFile(..), getSampleData, hasSampleInput, defaultChoices,
-  choicesSent, showChs) where
+  choicesSent, showChs, DesignChoice(..), designChoiceStr) where
 
 import Language.Drasil
 
@@ -296,3 +296,12 @@ choicesSent chs = map chsFieldSent [
 -- | Helper to combine pairs of 'Sentence's for rendering 'Choices'.
 chsFieldSent :: (Sentence, Sentence) -> Sentence
 chsFieldSent (rec, chc) = rec +:+ S "selected as" +:+. chc
+
+-- | Algebraic data type for choices
+
+--data DesignChoice = GetInputChoice | InlineChoice deriving (Show)
+data DesignChoice = GetInputChoice deriving (Show)
+
+designChoiceStr :: DesignChoice -> String
+designChoiceStr GetInputChoice = "get_input"
+
