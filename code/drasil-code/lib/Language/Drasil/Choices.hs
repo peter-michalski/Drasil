@@ -300,7 +300,7 @@ chsFieldSent (rec, chc) = rec +:+ S "selected as" +:+. chc
 -- | Algebraic data type for choices
 
 --data DesignChoice = GetInputChoice | InlineChoice deriving (Show)
-data DesignChoice = GetInputChoice deriving (Show)
+data DesignChoice = GetInputChoice
 
 designChoiceStr :: DesignChoice -> String
 designChoiceStr GetInputChoice = "get_input"
