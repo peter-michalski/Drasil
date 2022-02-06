@@ -36,16 +36,16 @@ getAllInputCalls = do
 
 -- | Generates a call to the function for reading inputs from a file.
 getInputCall :: (OOProg r) => GenState (Maybe (MSStatement r))
-getInputCall = getInOutCall (Right GetInputChoice) getInputFormatIns getInputFormatOuts
+getInputCall = getInOutCall GetInputChoice getInputFormatIns getInputFormatOuts
 
 -- | Generates a call to the function for calculating derived inputs.
 getDerivedCall :: (OOProg r) => GenState (Maybe (MSStatement r))
-getDerivedCall = getInOutCall (Left "derived_values") getDerivedIns getDerivedOuts
+getDerivedCall = getInOutCall DerivedValuesChoice getDerivedIns getDerivedOuts
 
 -- | Generates a call to the function for checking constraints on the input.
 getConstraintCall :: (OOProg r) => GenState (Maybe (MSStatement r))
 getConstraintCall = do
-  val <- getFuncCall "input_constraints" void getConstraintParams
+  val <- getFuncCall (Right InputConstraintsChoice) void getConstraintParams
   return $ fmap valStmt val
 
 -- | Generates a call to a calculation function, given the 'CodeDefinition' for the 
@@ -53,7 +53,7 @@ getConstraintCall = do
 getCalcCall :: (OOProg r) => CodeDefinition -> GenState (Maybe (MSStatement r))
 getCalcCall c = do
   t <- codeType c
-  val <- getFuncCall (codeName c) (convType t) (getCalcParams c)
+  val <- getFuncCall (Left (codeName c)) (convType t) (getCalcParams c)
   v <- mkVar $ quantvar c
   l <- maybeLog v
   return $ fmap (multi . (: l) . varDecDef v) val
@@ -61,14 +61,14 @@ getCalcCall c = do
 -- | Generates a call to the function for printing outputs.
 getOutputCall :: (OOProg r) => GenState (Maybe (MSStatement r))
 getOutputCall = do
-  val <- getFuncCall "write_output" void getOutputParams
+  val <- getFuncCall (Right WriteOutputChoice) void getOutputParams
   return $ fmap valStmt val
 
 -- | Generates a function call given the name, return type, and arguments to 
 -- the function.
-getFuncCall :: (OOProg r) => Name -> VSType r -> 
+getFuncCall :: (OOProg r) => (Either Name DesignChoice) -> VSType r -> 
   GenState [CodeVarChunk] -> GenState (Maybe (SValue r))
-getFuncCall n t funcPs = do
+getFuncCall (Left n) t funcPs = do
   mm <- getCall (Left n)
   let getFuncCall' Nothing = return Nothing
       getFuncCall' (Just m) = do
@@ -77,24 +77,22 @@ getFuncCall n t funcPs = do
         val <- fApp m n t pvals []
         return $ Just val
   getFuncCall' mm
+getFuncCall (Right n) t funcPs = do
+  mm <- getCall (Right n)
+  let getFuncCall' Nothing = return Nothing
+      getFuncCall' (Just m) = do
+        cs <- funcPs
+        pvals <- mapM mkVal cs
+        val <- fApp m (designChoiceStr n) t pvals []
+        return $ Just val
+  getFuncCall' mm
+
 
 -- | Generates a function call given the name, inputs, and outputs for the
 -- function.
-getInOutCall :: (OOProg r) => (Either Name DesignChoice) -> GenState [CodeVarChunk] -> 
+getInOutCall :: (OOProg r) => DesignChoice -> GenState [CodeVarChunk] -> 
   GenState [CodeVarChunk] -> GenState (Maybe (MSStatement r))
-getInOutCall (Left n) inFunc outFunc = do
-  mm <- getCall (Left n)
-  let getInOutCall' Nothing = return Nothing
-      getInOutCall' (Just m) = do
-        ins' <- inFunc
-        outs' <- outFunc
-        ins <- mapM mkVar (ins' \\ outs')
-        outs <- mapM mkVar (outs' \\ ins')
-        both <- mapM mkVar (ins' `intersect` outs')
-        stmt <- fAppInOut m n (map valueOf ins) outs both
-        return $ Just stmt
-  getInOutCall' mm
-getInOutCall (Right n) inFunc outFunc = do
+getInOutCall n inFunc outFunc = do
   mm <- getCall (Right n)
   let getInOutCall' Nothing = return Nothing
       getInOutCall' (Just m) = do
