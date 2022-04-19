@@ -10,7 +10,8 @@ import Language.Drasil.Code.Imperative.Parameters (getCalcParams,
   getConstraintParams, getDerivedIns, getDerivedOuts, getInputFormatIns, 
   getInputFormatOuts, getOutputParams)
 import Language.Drasil.Code.Imperative.DrasilState (GenState, DrasilState(..))
-import Language.Drasil.Chunk.Code (CodeIdea(codeName), CodeVarChunk, quantvar)
+import Language.Drasil.Chunk.Code (CodeIdea(codeNameFoV), CodeVarChunk, 
+  quantvar)
 import Language.Drasil.Chunk.CodeDefinition (CodeDefinition)
 import Language.Drasil.Mod (Name)
 
@@ -52,7 +53,7 @@ getConstraintCall = do
 getCalcCall :: (OOProg r) => CodeDefinition -> GenState (Maybe (MSStatement r))
 getCalcCall c = do
   t <- codeType c
-  val <- getFuncCall (codeName c) (convType t) (getCalcParams c)
+  val <- getFuncCall (codeNameFoV c) (convType t) (getCalcParams c)
   v <- mkVar $ quantvar c
   l <- maybeLog v
   return $ fmap (multi . (: l) . varDecDef v) val

@@ -27,8 +27,8 @@ import Language.Drasil.Code.Imperative.Parameters (getConstraintParams,
   getInputFormatOuts, getCalcParams, getOutputParams)
 import Language.Drasil.Code.Imperative.DrasilState (GenState, DrasilState(..))
 import Language.Drasil.Code.Imperative.GOOL.ClassInterface (AuxiliarySym(..))
-import Language.Drasil.Chunk.Code (CodeIdea(codeName), CodeVarChunk, quantvar, 
-  DefiningCodeExpr(..))
+import Language.Drasil.Chunk.Code (CodeIdea(codeName, codeNameFoV), 
+  CodeVarChunk, quantvar, DefiningCodeExpr(..))
 import Language.Drasil.Chunk.CodeDefinition (CodeDefinition, DefinitionType(..),
   defType)
 import Language.Drasil.Chunk.ConstraintMap (physLookup, sfwrLookup)
@@ -494,7 +494,7 @@ genCalcFunc :: (OOProg r) => CodeDefinition ->
 genCalcFunc cdef = do
   g <- get
   parms <- getCalcParams cdef
-  let nm = codeName cdef
+  let nm = codeNameFoV cdef
   tp <- codeType cdef
   v <- mkVar (quantvar cdef)
   blcks <- case cdef ^. defType 

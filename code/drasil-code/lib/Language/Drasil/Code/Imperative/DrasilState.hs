@@ -7,7 +7,7 @@ module Language.Drasil.Code.Imperative.DrasilState (
 import Language.Drasil
 import GOOL.Drasil (ScopeTag(..), CodeType)
 
-import Language.Drasil.Chunk.Code (codeName)
+import Language.Drasil.Chunk.Code (codeName, codeNameFoV)
 import Language.Drasil.Chunk.ConstraintMap (ConstraintCE)
 import Language.Drasil.Code.ExtLibImport (ExtLibState)
 import Language.Drasil.Choices (Choices(..), Architecture (..), DataInfo(..),
@@ -275,7 +275,7 @@ getInputFormatCls chs _ = ifCls (inputModule chs) (inputStructure $ dataInfo chs
 -- Functions are exported by module named after program if 'Unmodular'.
 -- Function is exported by Calculations module if program is 'Modular'.
 getExpCalcs :: Name -> Choices -> [Def] -> [ModExp]
-getExpCalcs n chs = map (\d -> (codeName d, calMod))
+getExpCalcs n chs = map (\d -> (codeNameFoV d, calMod))
   where calMod = cMod $ modularity $ architecture chs
         cMod Unmodular = n
         cMod _ = "Calculations"

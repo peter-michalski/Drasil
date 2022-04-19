@@ -18,6 +18,7 @@ import Data.List (nub)
 -- | A 'CodeIdea' must include some code and its name. 
 class CodeIdea c where
   -- | Name of the idea.
+  codeNameFoV  :: c -> String
   codeName  :: c -> String
   -- | Code chunk associated with the idea.
   codeChunk :: c -> CodeChunk

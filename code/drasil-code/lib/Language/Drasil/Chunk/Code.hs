@@ -19,16 +19,19 @@ import Text.PrettyPrint.HughesPJ (render)
 -- | Finds the code name of a 'CodeChunk'.
 instance CodeIdea    CodeChunk where
   codeName = render . symbolDoc . codeSymb . view qc
+  codeNameFoV = render . symbolDoc . codeSymb . view qc
   codeChunk = id
 
 -- | Finds the code name and 'CodeChunk' within a 'CodeVarChunk'.
 instance CodeIdea    CodeVarChunk where 
   codeName = codeName . view ccv
+  codeNameFoV = codeName . view ccv
   codeChunk c = CodeC (view qc $ view ccv c) Var
 
 -- | Finds the code name and 'CodeChunk' within a 'CodeFuncChunk'.
 instance CodeIdea    CodeFuncChunk where 
   codeName = codeName . view ccf
+  codeNameFoV = codeName . view ccf
   codeChunk c = CodeC (view qc $ view ccf c) Func
 
 -- | Combine an Object-type 'CodeChunk' with another 'CodeChunk' to create a new 

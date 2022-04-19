@@ -30,6 +30,7 @@ instance HasSymbol   ParameterChunk where symbol = symbol . view pcc
 instance Quantity    ParameterChunk
 -- | Finds the code name and 'CodeChunk' of a 'ParameterChunk'.
 instance CodeIdea    ParameterChunk where
+  codeNameFoV = codeName . view pcc
   codeName = codeName . view pcc
   codeChunk = codeChunk . view pcc
 -- | Equal if 'UID's are equal.

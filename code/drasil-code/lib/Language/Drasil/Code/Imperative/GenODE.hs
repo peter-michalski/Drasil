@@ -6,7 +6,7 @@ import Language.Drasil (Sentence(..), (+:+.))
 import Language.Drasil.Code.ExtLibImport (ExtLibState(..), 
   genExternalLibraryCall)
 import Language.Drasil.Code.Lang (Lang(..))
-import Language.Drasil.Chunk.Code (codeName)
+import Language.Drasil.Chunk.Code (codeNameFoV)
 import Language.Drasil.Chunk.CodeDefinition (odeDef)
 import Language.Drasil.Mod (Name, Version)
 import Language.Drasil.Data.ODELibPckg (ODELibPckg(..))
@@ -32,7 +32,7 @@ chooseODELib l (Just ode) = chooseODELib' (odeLib ode) (odeLib ode)
         chooseODELib' prefLibList (o:os) = if l `elem` compatibleLangs o 
           then do 
             modify (++ [firstChoiceODELib prefLibList o])
-            return (libPath o, map (\ode' -> (codeName $ odeDef ode', 
+            return (libPath o, map (\ode' -> (codeNameFoV $ odeDef ode', 
               genExternalLibraryCall (libSpec o) $ libCall o ode')) $ odeInfo ode, 
                 (libName o, libVers o)) 
           else modify (++ [incompatibleLib l o]) >> chooseODELib' prefLibList os

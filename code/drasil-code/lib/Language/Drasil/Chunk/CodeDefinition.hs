@@ -4,8 +4,9 @@ module Language.Drasil.Chunk.CodeDefinition (
 ) where
 
 import Language.Drasil
-import Language.Drasil.Chunk.Code (CodeChunk(..), CodeIdea(codeName, codeChunk),
-  VarOrFunc(..), quantvar, quantfunc, funcPrefix, DefiningCodeExpr(..))
+import Language.Drasil.Chunk.Code (CodeChunk(..), CodeIdea(codeName, codeChunk,
+  codeNameFoV), VarOrFunc(..), quantvar, quantfunc, funcPrefix, 
+  DefiningCodeExpr(..))
 import Language.Drasil.CodeExpr (CodeExpr, expr)
 import Language.Drasil.Data.ODEInfo (ODEInfo(..), ODEOptions(..))
 
@@ -38,9 +39,12 @@ instance Quantity         CodeDefinition
 -- | Finds the code name of a 'CodeDefinition'.
 -- 'Function' 'CodeDefinition's are named with the function prefix to distinguish 
 -- them from the corresponding variable version.
+-- | codeName returns the name without a prefix. 
+-- FoV distinguishes between variable and function versions. 
 instance CodeIdea         CodeDefinition where 
-  codeName (CD c@(CodeC _ Var) _ _ _) = codeName c
-  codeName (CD c@(CodeC _ Func) _ _ _) = funcPrefix ++ codeName c
+  codeName (CD c@(CodeC _ _) _ _ _) = codeName c
+  codeNameFoV (CD c@(CodeC _ Var) _ _ _) = codeName c
+  codeNameFoV (CD c@(CodeC _ Func) _ _ _) = funcPrefix ++ codeName c
   codeChunk = view cchunk
 -- | Equal if 'UID's are equal.
 instance Eq               CodeDefinition where c1 == c2 = (c1 ^. uid) == (c2 ^. uid)
